@@ -27,7 +27,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.0.0'
     testCompile 'junit:junit:4.12'
-    compile project(':dubgrade')
+//    compile project(':dubgrade')
+    compile 'com.github.zhl3391:GradeDemo:0.0.1'
 
     compile 'com.github.hotchemi:permissionsdispatcher:2.2.0'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.2.0'

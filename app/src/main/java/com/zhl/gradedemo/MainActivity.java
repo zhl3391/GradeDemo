@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.feizhu.dubgrade.GradeConfig;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnStartRecord = (Button) findViewById(R.id.btn_start_record);
         Button btnStopRecord = (Button) findViewById(R.id.btn_stop_record);
 
-        mTvContent.setText("how are you!");
+        mTvContent.setText("No .");
 
         btnCreateXunFeiEngine.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +119,16 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             mTvResult.setText("失败了吧!");
                         }
+                    }
+                });
+            }
+
+            @Override
+            public void onError(final int code, String msg) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mActivity, "评分失败(" + code + ")", Toast.LENGTH_LONG).show();
                     }
                 });
             }

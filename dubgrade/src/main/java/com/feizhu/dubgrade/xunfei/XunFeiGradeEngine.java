@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.feizhu.dubgrade.GradeConfig;
 import com.feizhu.dubgrade.GradeEngine;
+import com.feizhu.dubgrade.GradeResult;
 import com.iflytek.cloud.EvaluatorListener;
 import com.iflytek.cloud.EvaluatorResult;
 import com.iflytek.cloud.Setting;
@@ -76,13 +77,21 @@ public class XunFeiGradeEngine implements GradeEngine {
                 String lastResult = result.getResultString();
                 if (mResultListener != null) {
                     XmlResultParser resultParser = new XmlResultParser();
-                    mResultListener.onResult(resultParser.parse(lastResult));
+                    Result ret = resultParser.parse(lastResult);
+                    if (ret != null) {
+                        mResultListener.onResult(ret);
+                    } else {
+                        mResultListener.onError(-1, "结果解析失败!");
+                    }
                 }
             }
         }
 
         @Override
         public void onError(SpeechError error) {
+            if (mResultListener != null) {
+                mResultListener.onError(error.getErrorCode(), error.getMessage());
+            }
         }
 
         @Override

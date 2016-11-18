@@ -26,5 +26,7 @@ public interface GradeEngine {
     interface ResultListener {
 
         void onResult(GradeResult result);
+
+        void onError(int code, String msg);
     }
 }

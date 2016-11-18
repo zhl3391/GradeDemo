@@ -77,10 +77,22 @@ public class ChiShengGradeEngine implements GradeEngine {
         @Override
         public int run(byte[] id, int type, byte[] data, int size) {
             if (type == AIEngine.AIENGINE_MESSAGE_TYPE_JSON) {
-                final String recId = new String(id).trim();
                 final String responseString = new String(data, 0, size).trim();
                 if (mResultListener != null) {
-                    mResultListener.onResult(parseJson(responseString));
+                    Result result = parseJson(responseString);
+                    if (result != null) {
+                        mResultListener.onResult(result);
+                    } else {
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = new JSONObject(responseString);
+                            JSONObject resultJson = jsonObject.getJSONObject("result");
+                            int errorId = resultJson.getInt("errID");
+                            mResultListener.onError(errorId, "");
+                        } catch (JSONException e) {
+                            mResultListener.onError(-1, e.toString());
+                        }
+                    }
                 }
 
             } else if (type == AIEngine.AIENGINE_MESSAGE_TYPE_BIN) { // 仅语音合成时使用

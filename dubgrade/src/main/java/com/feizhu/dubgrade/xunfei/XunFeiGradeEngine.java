@@ -2,6 +2,7 @@ package com.feizhu.dubgrade.xunfei;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.feizhu.dubgrade.GradeConfig;
 import com.feizhu.dubgrade.GradeEngine;
@@ -12,6 +13,7 @@ import com.iflytek.cloud.Setting;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvaluator;
+import com.iflytek.cloud.SpeechEvent;
 import com.iflytek.cloud.SpeechUtility;
 
 /**
@@ -21,9 +23,12 @@ import com.iflytek.cloud.SpeechUtility;
 
 public class XunFeiGradeEngine implements GradeEngine {
 
+    private static final String TAG = "XunFeiGradeEngine";
+
     private static final String languages[] = {"en_us", "zh_cn"};
     private SpeechEvaluator mIse;
 
+    private GradeConfig mGradeConfig;
     private ResultListener mResultListener;
 
     @Override
@@ -75,6 +80,9 @@ public class XunFeiGradeEngine implements GradeEngine {
         public void onResult(EvaluatorResult result, boolean isLast) {
             if (isLast) {
                 String lastResult = result.getResultString();
+                if (mGradeConfig.isDebug) {
+                    Log.d(TAG, lastResult);
+                }
                 if (mResultListener != null) {
                     XmlResultParser resultParser = new XmlResultParser();
                     Result ret = resultParser.parse(lastResult);
@@ -97,11 +105,17 @@ public class XunFeiGradeEngine implements GradeEngine {
         @Override
         public void onBeginOfSpeech() {
             // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
+            if (mGradeConfig.isDebug) {
+                Log.d(TAG, "onBeginOfSpeech");
+            }
         }
 
         @Override
         public void onEndOfSpeech() {
             // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
+            if (mGradeConfig.isDebug) {
+                Log.d(TAG, "onEndOfSpeech");
+            }
         }
 
         @Override
@@ -111,10 +125,12 @@ public class XunFeiGradeEngine implements GradeEngine {
         @Override
         public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
             // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
-            //	if (SpeechEvent.EVENT_SESSION_ID == eventType) {
-            //		String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
-            //		CLog.d(TAG, "session id =" + sid);
-            //	}
+            if (SpeechEvent.EVENT_SESSION_ID == eventType) {
+                String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
+                if (mGradeConfig.isDebug) {
+                    Log.d(TAG, "session id =" + sid);
+                }
+            }
         }
     };
 

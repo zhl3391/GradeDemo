@@ -1,6 +1,7 @@
 package com.feizhu.dubgrade.chisheng;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.chivox.AIEngine;
 import com.feizhu.dubgrade.GradeConfig;
@@ -22,6 +23,8 @@ import java.util.List;
  */
 
 public class ChiShengGradeEngine implements GradeEngine {
+
+    public static final String TAG = "ChiShengGradeEngine";
 
     private GradeConfig mGradeConfig;
     private ResultListener mResultListener;
@@ -78,6 +81,9 @@ public class ChiShengGradeEngine implements GradeEngine {
         public int run(byte[] id, int type, byte[] data, int size) {
             if (type == AIEngine.AIENGINE_MESSAGE_TYPE_JSON) {
                 final String responseString = new String(data, 0, size).trim();
+                if (mGradeConfig.isDebug) {
+                    Log.d(TAG, responseString);
+                }
                 if (mResultListener != null) {
                     Result result = parseJson(responseString);
                     if (result != null) {

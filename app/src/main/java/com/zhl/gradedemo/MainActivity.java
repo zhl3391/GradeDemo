@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnStartRecord = (Button) findViewById(R.id.btn_start_record);
         Button btnStopRecord = (Button) findViewById(R.id.btn_stop_record);
 
-        mTvContent.setText("No .");
+        mTvContent.setText("how are you");
 
         btnCreateXunFeiEngine.setOnClickListener(new View.OnClickListener() {
             @Override

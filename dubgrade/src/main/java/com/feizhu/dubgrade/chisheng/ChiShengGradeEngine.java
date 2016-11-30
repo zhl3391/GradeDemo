@@ -192,6 +192,7 @@ public class ChiShengGradeEngine implements GradeEngine {
         try {
             result = new Result();
             JSONObject jsonObject = new JSONObject(jsonResult);
+            result.text = jsonObject.getString("refText");
             JSONObject resultJson = jsonObject.getJSONObject("result");
             result.totalScore = resultJson.getInt("overall");
             result.accuracyScore = resultJson.getInt("accuracy");
@@ -219,6 +220,7 @@ public class ChiShengGradeEngine implements GradeEngine {
 
     private class Result extends StringGradeResult {
 
+        String text;
         int totalScore;
         int integrityScore;
         int accuracyScore;
@@ -247,6 +249,11 @@ public class ChiShengGradeEngine implements GradeEngine {
         @Override
         public int getFluencyScore() {
             return fluencyScore;
+        }
+
+        @Override
+        public String getText() {
+            return text;
         }
     }
 

@@ -106,4 +106,9 @@ public class Result extends StringGradeResult implements Serializable {
     public int getFluencyScore() {
         return 0;
     }
+
+    @Override
+    public String getText() {
+        return content;
+    }
 }

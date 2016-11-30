@@ -33,8 +33,9 @@ public class XunFeiGradeEngine implements GradeEngine {
 
     @Override
     public boolean init(Context context, GradeConfig gradeConfig) {
+        mGradeConfig = gradeConfig;
         SpeechUtility.createUtility(context.getApplicationContext(), gradeConfig.appId);
-        Setting.setShowLog(gradeConfig.isDebug);
+        Setting.setShowLog(mGradeConfig.isDebug);
         mIse = SpeechEvaluator.createEvaluator(context.getApplicationContext(), null);
         setParams();
         return mIse != null;

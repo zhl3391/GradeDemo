@@ -34,6 +34,11 @@ public interface GradeResult {
      */
     int getFluencyScore();
 
+    /**
+     * 原始文字
+     */
+    String getText();
+
     String toString();
 
     interface WordResult {

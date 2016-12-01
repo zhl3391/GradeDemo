@@ -92,8 +92,7 @@ public class ChiShengGradeEngine implements GradeEngine {
                         JSONObject jsonObject;
                         try {
                             jsonObject = new JSONObject(responseString);
-                            JSONObject resultJson = jsonObject.getJSONObject("result");
-                            int errorId = resultJson.getInt("errID");
+                            int errorId = jsonObject.getInt("errId");
                             mResultListener.onError(errorId, "");
                         } catch (JSONException e) {
                             mResultListener.onError(-1, e.toString());

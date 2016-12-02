@@ -44,6 +44,9 @@ public class XunFeiGradeEngine implements GradeEngine {
     @Override
     public int start(String content) {
         if (mIse != null) {
+            if (mGradeConfig.punctuationFormat != null) {
+                content = mGradeConfig.punctuationFormat.format(content);
+            }
             return mIse.startEvaluating(content, null, mEvaluatorListener);
         } else {
             return ERROR_CODE;

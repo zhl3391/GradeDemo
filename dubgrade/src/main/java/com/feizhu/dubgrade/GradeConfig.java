@@ -27,6 +27,8 @@ public class GradeConfig {
 
     public final boolean isDebug;
 
+    public final PunctuationFormat punctuationFormat;
+
     public GradeConfig() {
         this(new Builder());
     }
@@ -46,6 +48,7 @@ public class GradeConfig {
         this.predWordDetail = builder.predWordDetail;
         this.predPhonemeDetails = builder.predPhonemeDetails;
         this.coreType = builder.coreType;
+        this.punctuationFormat = builder.punctuationFormat;
     }
 
     public static final class Builder {
@@ -64,6 +67,7 @@ public class GradeConfig {
         int predWordDetail;
         int predPhonemeDetails;
         boolean isDebug;
+        PunctuationFormat punctuationFormat;
 
         public Builder() {
             this.setCoreType(GradeConfig.CORE_TYPE_SENT)
@@ -72,7 +76,8 @@ public class GradeConfig {
                     .setPredPrecision(1)
                     .setPredPhonemeDetails(0)
                     .setPredWordDetail(0)
-                    .setScoreType(100);
+                    .setScoreType(100)
+                    .setPunctuationFormat(new DefaultPunctuationFormat());
         }
 
         public GradeConfig build() {
@@ -146,6 +151,11 @@ public class GradeConfig {
 
         public Builder setCoreType(int coreType) {
             this.coreType = coreType;
+            return this;
+        }
+
+        public Builder setPunctuationFormat(PunctuationFormat punctuationFormat) {
+            this.punctuationFormat = punctuationFormat;
             return this;
         }
     }

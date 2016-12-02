@@ -44,6 +44,9 @@ public class ChiShengGradeEngine implements GradeEngine {
         if (mEngineId != 0) {
             byte[] userdata = new byte[64];
             byte[] id = new byte[64];
+            if (mGradeConfig.punctuationFormat != null) {
+                content = mGradeConfig.punctuationFormat.format(content);
+            }
             int ret = AIEngine.aiengine_start(mEngineId, getEngineStartParam(content, mGradeConfig.coreType), id, callback, userdata);
             if (ret == -1) {
                 return ERROR_CODE;

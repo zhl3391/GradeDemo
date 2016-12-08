@@ -35,6 +35,11 @@ public interface GradeResult {
     int getFluencyScore();
 
     /**
+     * 节奏得分
+     */
+    int getRhythmScore();
+
+    /**
      * 原始文字
      */
     String getText();

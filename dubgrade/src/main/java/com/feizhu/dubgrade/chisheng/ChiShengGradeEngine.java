@@ -211,7 +211,8 @@ public class ChiShengGradeEngine implements GradeEngine {
                 wordResultList.add(word);
             }
             result.wordResultList = wordResultList;
-
+            JSONObject rhythmJson = resultJson.getJSONObject("rhythm");
+            result.rhythmScore = rhythmJson.getInt("overall");
         } catch (JSONException e) {
             e.printStackTrace();
             result = null;
@@ -227,6 +228,7 @@ public class ChiShengGradeEngine implements GradeEngine {
         int integrityScore;
         int accuracyScore;
         int fluencyScore;
+        int rhythmScore;
         List<WordResult> wordResultList;
 
         public List<WordResult> getWordResultList() {
@@ -251,6 +253,11 @@ public class ChiShengGradeEngine implements GradeEngine {
         @Override
         public int getFluencyScore() {
             return fluencyScore;
+        }
+
+        @Override
+        public int getRhythmScore() {
+            return rhythmScore;
         }
 
         @Override

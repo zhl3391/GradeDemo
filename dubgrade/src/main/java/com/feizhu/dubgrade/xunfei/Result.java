@@ -39,6 +39,12 @@ public class Result extends StringGradeResult implements Serializable {
      * 总得分
      */
     public float total_score;
+
+    public float accuracy_score;
+
+    public float fluency_score;
+
+    public float integrity_score;
     /**
      * 时长（cn）
      */
@@ -94,16 +100,21 @@ public class Result extends StringGradeResult implements Serializable {
 
     @Override
     public int getIntegrityScore() {
-        return 0;
+        return (int) (integrity_score * 20);
     }
 
     @Override
     public int getAccuracyScore() {
-        return 0;
+        return (int) (accuracy_score * 20);
     }
 
     @Override
     public int getFluencyScore() {
+        return (int) (fluency_score * 20);
+    }
+
+    @Override
+    public int getRhythmScore() {
         return 0;
     }
 

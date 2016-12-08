@@ -171,6 +171,9 @@ public class XmlResultParser {
 		result.end_pos = getInt(pullParser, "end_pos");
 		result.content = getContent(pullParser);
 		result.total_score = getFloat(pullParser, "total_score");
+		result.accuracy_score = getFloat(pullParser, "accuracy_score");
+		result.fluency_score = getFloat(pullParser, "fluency_score");
+		result.integrity_score = getFloat(pullParser, "integrity_score");
 		result.time_len = getInt(pullParser, "time_len");
 		result.except_info = getExceptInfo(pullParser);
 		result.is_rejected = getIsRejected(pullParser);

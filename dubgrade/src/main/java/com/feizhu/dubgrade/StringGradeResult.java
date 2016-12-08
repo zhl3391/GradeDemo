@@ -15,7 +15,8 @@ public abstract class StringGradeResult implements GradeResult {
                 .append("totalScore = ").append(getTotalScore()).append("\n")
                 .append("integrityScore = ").append(getIntegrityScore()).append("\n")
                 .append("accuracyScore = ").append(getAccuracyScore()).append("\n")
-                .append("fluencyScore = ").append(getFluencyScore()).append("\n");
+                .append("fluencyScore = ").append(getFluencyScore()).append("\n")
+                .append("rhythmScore = ").append(getRhythmScore()).append("\n");
         if (getWordResultList() != null) {
             for (WordResult wordResult : getWordResultList()) {
                 stringBuilder.append(wordResult.toString()).append("\n");

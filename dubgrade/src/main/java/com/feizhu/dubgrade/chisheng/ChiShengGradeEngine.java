@@ -241,8 +241,18 @@ public class ChiShengGradeEngine implements GradeEngine {
         }
 
         @Override
+        public void setTotalScore(int score) {
+            totalScore = score;
+        }
+
+        @Override
         public int getIntegrityScore() {
             return integrityScore;
+        }
+
+        @Override
+        public void setIntegrityScore(int score) {
+            integrityScore = score;
         }
 
         @Override
@@ -251,13 +261,28 @@ public class ChiShengGradeEngine implements GradeEngine {
         }
 
         @Override
+        public void setAccuracyScore(int score) {
+            accuracyScore = score;
+        }
+
+        @Override
         public int getFluencyScore() {
             return fluencyScore;
         }
 
         @Override
+        public void setFluencyScore(int score) {
+            fluencyScore = score;
+        }
+
+        @Override
         public int getRhythmScore() {
             return rhythmScore;
+        }
+
+        @Override
+        public void setRhythmScore(int score) {
+            rhythmScore = score;
         }
 
         @Override

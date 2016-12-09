@@ -99,8 +99,18 @@ public class Result extends StringGradeResult implements Serializable {
     }
 
     @Override
+    public void setTotalScore(int score) {
+        total_score = score;
+    }
+
+    @Override
     public int getIntegrityScore() {
         return (int) (integrity_score * 20);
+    }
+
+    @Override
+    public void setIntegrityScore(int score) {
+        integrity_score = score;
     }
 
     @Override
@@ -109,13 +119,28 @@ public class Result extends StringGradeResult implements Serializable {
     }
 
     @Override
+    public void setAccuracyScore(int score) {
+        accuracy_score = score;
+    }
+
+    @Override
     public int getFluencyScore() {
         return (int) (fluency_score * 20);
     }
 
     @Override
+    public void setFluencyScore(int score) {
+        fluency_score = score;
+    }
+
+    @Override
     public int getRhythmScore() {
         return 0;
+    }
+
+    @Override
+    public void setRhythmScore(int score) {
+
     }
 
     @Override

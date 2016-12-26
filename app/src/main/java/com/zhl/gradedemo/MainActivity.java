@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         btnStartRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int ret = mGradeEngine.start(mTvContent.getText().toString());
+                int ret = mGradeEngine.start(mTvContent.getText().toString(), 0);
                 if (ret != GradeEngine.ERROR_CODE) {
                     MainActivityPermissionsDispatcher.showRecordAudioWithCheck(MainActivity.this);
                 } else {
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         mGradeEngine = GradeEngineFactory.createGradeEngine(mEngineType);
         mGradeEngine.setResultListener(new GradeEngine.ResultListener() {
             @Override
-            public void onResult(final GradeResult result) {
+            public void onResult(final GradeResult result, int index) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(final int code, String msg) {
+            public void onError(final int code, String msg, int index) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

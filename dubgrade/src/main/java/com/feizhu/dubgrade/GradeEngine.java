@@ -13,7 +13,7 @@ public interface GradeEngine {
 
     boolean init(Context context, GradeConfig gradeConfig);
 
-    int start(String content);
+    int start(String content, final int index);
 
     void writeAudio(byte[] data, int size);
 
@@ -25,8 +25,8 @@ public interface GradeEngine {
 
     interface ResultListener {
 
-        void onResult(GradeResult result);
+        void onResult(GradeResult result, int index);
 
-        void onError(int code, String msg);
+        void onError(int code, String msg, int index);
     }
 }

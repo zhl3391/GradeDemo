@@ -40,14 +40,44 @@ public class ChiShengGradeEngine implements GradeEngine {
     }
 
     @Override
-    public int start(String content) {
+    public int start(String content, final int index) {
         if (mEngineId != 0) {
             byte[] userdata = new byte[64];
             byte[] id = new byte[64];
             if (mGradeConfig.punctuationFormat != null) {
                 content = mGradeConfig.punctuationFormat.format(content);
             }
-            int ret = AIEngine.aiengine_start(mEngineId, getEngineStartParam(content, mGradeConfig.coreType), id, callback, userdata);
+            int ret = AIEngine.aiengine_start(mEngineId, getEngineStartParam(content, mGradeConfig.coreType),
+                    id, new AIEngine.aiengine_callback() {
+                @Override
+                public int run(byte[] id, int type, byte[] data, int size) {
+                    if (type == AIEngine.AIENGINE_MESSAGE_TYPE_JSON) {
+                        final String responseString = new String(data, 0, size).trim();
+                        if (mGradeConfig.isDebug) {
+                            Log.d(TAG, responseString);
+                        }
+                        if (mResultListener != null) {
+                            Result result = parseJson(responseString);
+                            if (result != null) {
+                                mResultListener.onResult(result, index);
+                            } else {
+                                JSONObject jsonObject;
+                                try {
+                                    jsonObject = new JSONObject(responseString);
+                                    int errorId = jsonObject.getInt("errId");
+                                    mResultListener.onError(errorId, "", index);
+                                } catch (JSONException e) {
+                                    mResultListener.onError(-1, e.toString(), index);
+                                }
+                            }
+                        }
+
+                    } else if (type == AIEngine.AIENGINE_MESSAGE_TYPE_BIN) { // 仅语音合成时使用
+
+                    }
+                    return 0;
+                }
+            }, userdata);
             if (ret == -1) {
                 return ERROR_CODE;
             } else {
@@ -78,37 +108,6 @@ public class ChiShengGradeEngine implements GradeEngine {
     public void setResultListener(ResultListener resultListener) {
         mResultListener = resultListener;
     }
-
-    private AIEngine.aiengine_callback callback = new AIEngine.aiengine_callback() {
-        @Override
-        public int run(byte[] id, int type, byte[] data, int size) {
-            if (type == AIEngine.AIENGINE_MESSAGE_TYPE_JSON) {
-                final String responseString = new String(data, 0, size).trim();
-                if (mGradeConfig.isDebug) {
-                    Log.d(TAG, responseString);
-                }
-                if (mResultListener != null) {
-                    Result result = parseJson(responseString);
-                    if (result != null) {
-                        mResultListener.onResult(result);
-                    } else {
-                        JSONObject jsonObject;
-                        try {
-                            jsonObject = new JSONObject(responseString);
-                            int errorId = jsonObject.getInt("errId");
-                            mResultListener.onError(errorId, "");
-                        } catch (JSONException e) {
-                            mResultListener.onError(-1, e.toString());
-                        }
-                    }
-                }
-
-            } else if (type == AIEngine.AIENGINE_MESSAGE_TYPE_BIN) { // 仅语音合成时使用
-
-            }
-            return 0;
-        }
-    };
 
     private String getEngineNewParam() {
         JSONObject engineParams = new JSONObject();

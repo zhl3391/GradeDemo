@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.feizhu.dubgrade.GradeConfig;
 import com.feizhu.dubgrade.GradeEngine;
-import com.feizhu.dubgrade.GradeResult;
 import com.iflytek.cloud.EvaluatorListener;
 import com.iflytek.cloud.EvaluatorResult;
 import com.iflytek.cloud.Setting;
@@ -42,12 +41,70 @@ public class XunFeiGradeEngine implements GradeEngine {
     }
 
     @Override
-    public int start(String content) {
+    public int start(String content, final int index) {
         if (mIse != null) {
             if (mGradeConfig.punctuationFormat != null) {
                 content = mGradeConfig.punctuationFormat.format(content);
             }
-            return mIse.startEvaluating(content, null, mEvaluatorListener);
+            return mIse.startEvaluating(content, null, new EvaluatorListener() {
+
+                @Override
+                public void onResult(EvaluatorResult result, boolean isLast) {
+                    if (isLast) {
+                        String lastResult = result.getResultString();
+                        if (mGradeConfig.isDebug) {
+                            Log.d(TAG, lastResult);
+                        }
+                        if (mResultListener != null) {
+                            XmlResultParser resultParser = new XmlResultParser();
+                            Result ret = resultParser.parse(lastResult);
+                            if (ret != null) {
+                                mResultListener.onResult(ret, index);
+                            } else {
+                                mResultListener.onError(-1, "结果解析失败!", index);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(SpeechError error) {
+                    if (mResultListener != null) {
+                        mResultListener.onError(error.getErrorCode(), error.getMessage(), index);
+                    }
+                }
+
+                @Override
+                public void onBeginOfSpeech() {
+                    // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
+                    if (mGradeConfig.isDebug) {
+                        Log.d(TAG, "onBeginOfSpeech");
+                    }
+                }
+
+                @Override
+                public void onEndOfSpeech() {
+                    // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
+                    if (mGradeConfig.isDebug) {
+                        Log.d(TAG, "onEndOfSpeech");
+                    }
+                }
+
+                @Override
+                public void onVolumeChanged(int volume, byte[] data) {
+                }
+
+                @Override
+                public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
+                    // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
+                    if (SpeechEvent.EVENT_SESSION_ID == eventType) {
+                        String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
+                        if (mGradeConfig.isDebug) {
+                            Log.d(TAG, "session id =" + sid);
+                        }
+                    }
+                }
+            });
         } else {
             return ERROR_CODE;
         }
@@ -77,66 +134,6 @@ public class XunFeiGradeEngine implements GradeEngine {
     public void setResultListener(ResultListener resultListener) {
         mResultListener = resultListener;
     }
-
-    private EvaluatorListener mEvaluatorListener = new EvaluatorListener() {
-
-        @Override
-        public void onResult(EvaluatorResult result, boolean isLast) {
-            if (isLast) {
-                String lastResult = result.getResultString();
-                if (mGradeConfig.isDebug) {
-                    Log.d(TAG, lastResult);
-                }
-                if (mResultListener != null) {
-                    XmlResultParser resultParser = new XmlResultParser();
-                    Result ret = resultParser.parse(lastResult);
-                    if (ret != null) {
-                        mResultListener.onResult(ret);
-                    } else {
-                        mResultListener.onError(-1, "结果解析失败!");
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onError(SpeechError error) {
-            if (mResultListener != null) {
-                mResultListener.onError(error.getErrorCode(), error.getMessage());
-            }
-        }
-
-        @Override
-        public void onBeginOfSpeech() {
-            // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
-            if (mGradeConfig.isDebug) {
-                Log.d(TAG, "onBeginOfSpeech");
-            }
-        }
-
-        @Override
-        public void onEndOfSpeech() {
-            // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
-            if (mGradeConfig.isDebug) {
-                Log.d(TAG, "onEndOfSpeech");
-            }
-        }
-
-        @Override
-        public void onVolumeChanged(int volume, byte[] data) {
-        }
-
-        @Override
-        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
-            // 以下代码用于获取与云端的会话id，当业务出错时将会话id提供给技术支持人员，可用于查询会话日志，定位出错原因
-            if (SpeechEvent.EVENT_SESSION_ID == eventType) {
-                String sid = obj.getString(SpeechEvent.KEY_EVENT_SESSION_ID);
-                if (mGradeConfig.isDebug) {
-                    Log.d(TAG, "session id =" + sid);
-                }
-            }
-        }
-    };
 
     private void setParams() {
         // 设置评测语言,默认英语

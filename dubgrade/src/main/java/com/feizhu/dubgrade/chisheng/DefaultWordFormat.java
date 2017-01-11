@@ -110,7 +110,7 @@ public class DefaultWordFormat implements WordFormat {
     public String replaceMiscellaneous(String replaceValue) {
         replaceValue = this.replaceNumberSpace(replaceValue);
         replaceValue = this.replacePunctuationTrim(replaceValue);
-        return replaceValue.replaceAll("\\.(?=[a-zA-Z])|\\.$", ". ") //句号后添加空格粘连
+        replaceValue = replaceValue.replaceAll("\\.(?=[a-zA-Z])|\\.$", ". ") //句号后添加空格粘连
                 .replaceAll("\\s*[\\.]{3,}", "!!!")
                 .replaceAll("\\s*[\\.]{2}", ". ")
                 .replaceAll("\\s*[!]{3,}", "... ") //以上，为了支持英文省略号
@@ -124,9 +124,20 @@ public class DefaultWordFormat implements WordFormat {
                 .replaceAll("\\s*[;]{1,2}", "; ")
                 .replaceAll("\\?(?=[a-zA-Z]\\d)|\\?$", "? ")
                 .replaceAll("\\s*[\\?]{1,2}", "? ") //以上，分隔符类型标点符号后添加空格粘连
-                .replaceAll("\"(.*?)\"", " $& ") //双引号前后加空格，并粘连字母
                 .replaceAll("\\s+", " ") //多个相邻空字符替换为一个空格
                 .trim();
+
+        //双引号前后加空格，并粘连字母
+        Matcher m = Pattern.compile("\"(.*?)\"").matcher(replaceValue);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            String group = m.group(0);
+            m.appendReplacement(sb, Matcher.quoteReplacement(" " + group + " "));
+        }
+        m.appendTail(sb);
+        replaceValue = sb.toString();
+
+        return replaceValue;
     }
 
 }

@@ -50,6 +50,11 @@ public class DefaultPunctuationFormatTest {
         text = defaultWordFormat.replaceNumberSpace(text);
         System.out.println(text);
 
+        text = "\"Happy birthday! Mom!\"";
+        System.out.println(text);
+        text = defaultWordFormat.replaceMiscellaneous(text);
+        System.out.println(text);
+
     }
 
 }

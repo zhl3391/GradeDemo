@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.feizhu.dubgrade.GradeConfig;
 import com.feizhu.dubgrade.GradeEngine;
+import com.feizhu.dubgrade.WordFormat;
 import com.iflytek.cloud.EvaluatorListener;
 import com.iflytek.cloud.EvaluatorResult;
 import com.iflytek.cloud.Setting;
@@ -43,8 +44,10 @@ public class XunFeiGradeEngine implements GradeEngine {
     @Override
     public int start(String content, final int index) {
         if (mIse != null) {
-            if (mGradeConfig.punctuationFormat != null) {
-                content = mGradeConfig.punctuationFormat.format(content);
+            if (mGradeConfig.wordFormat != null) {
+                for (WordFormat wordFormat : mGradeConfig.wordFormat) {
+                    content = wordFormat.format(content);
+                }
             }
             return mIse.startEvaluating(content, null, new EvaluatorListener() {
 

@@ -8,6 +8,7 @@ import com.feizhu.dubgrade.GradeConfig;
 import com.feizhu.dubgrade.GradeEngine;
 import com.feizhu.dubgrade.GradeResult;
 import com.feizhu.dubgrade.StringGradeResult;
+import com.feizhu.dubgrade.WordFormat;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +16,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.feizhu.dubgrade.GradeConfig.CORE_TYPE_PRED;
+import static com.feizhu.dubgrade.GradeConfig.CORE_TYPE_SENT;
 
 
 /**
@@ -44,8 +48,10 @@ public class ChiShengGradeEngine implements GradeEngine {
         if (mEngineId != 0) {
             byte[] userdata = new byte[64];
             byte[] id = new byte[64];
-            if (mGradeConfig.punctuationFormat != null) {
-                content = mGradeConfig.punctuationFormat.format(content);
+            if (mGradeConfig.wordFormat != null) {
+                for (WordFormat wordFormat : mGradeConfig.wordFormat) {
+                    content = wordFormat.format(content);
+                }
             }
             int ret = AIEngine.aiengine_start(mEngineId, getEngineStartParam(content, mGradeConfig.coreType),
                     id, new AIEngine.aiengine_callback() {
@@ -161,7 +167,7 @@ public class ChiShengGradeEngine implements GradeEngine {
                 detailObject.put("sym", mGradeConfig.sentSymbol);
                 resultObject.put("details", detailObject);
                 requestObject.put("result", resultObject);
-            } else if (GradeConfig.CORE_TYPE_PRED == coreType) {
+            } else if (CORE_TYPE_PRED == coreType) {
                 requestObject.put("coreType", "en.pred.exam");
                 requestObject.put("precision", mGradeConfig.predPrecision);
                 JSONObject clientParams = new JSONObject();
@@ -193,25 +199,48 @@ public class ChiShengGradeEngine implements GradeEngine {
         try {
             result = new Result();
             JSONObject jsonObject = new JSONObject(jsonResult);
-            result.text = jsonObject.getString("refText");
+
             JSONObject resultJson = jsonObject.getJSONObject("result");
-            result.totalScore = resultJson.getInt("overall");
-            result.accuracyScore = resultJson.getInt("accuracy");
-            result.integrityScore = resultJson.getInt("integrity");
-            JSONObject fluencyJson = resultJson.getJSONObject("fluency");
-            result.fluencyScore = fluencyJson.getInt("overall");
+            result.totalScore = resultJson.optInt("overall");
+            result.accuracyScore = resultJson.optInt("accuracy");
+            result.integrityScore = resultJson.optInt("integrity");
             List<GradeResult.WordResult> wordResultList = new ArrayList<>();
             JSONArray details = resultJson.getJSONArray("details");
+            switch (mGradeConfig.coreType) {
+                case CORE_TYPE_PRED:
+                    result.fluencyScore = resultJson.getInt("fluency");
+                    result.text = jsonObject.getJSONObject("refText").optString("lm");
+                    break;
+                case CORE_TYPE_SENT:
+                    JSONObject fluencyJson = resultJson.getJSONObject("fluency");
+                    result.fluencyScore = fluencyJson.optInt("overall");
+                    result.text = jsonObject.optString("refText");
+                    break;
+            }
             for (int i=0; i<details.length(); i++) {
-                Word word = new Word();
+
                 JSONObject wordJson = details.getJSONObject(i);
-                word.score = wordJson.getInt("score");
-                word.word = wordJson.getString("char");
-                wordResultList.add(word);
+                switch (mGradeConfig.coreType) {
+                    case CORE_TYPE_PRED:
+                        JSONArray wordsArray = wordJson.getJSONArray("words");
+                        for (int j=0; j<wordsArray.length(); j++) {
+                            Word word = new Word();
+                            word.word = wordsArray.getJSONObject(j).optString("text");
+                            word.score = wordsArray.getJSONObject(j).optInt("score");
+                            wordResultList.add(word);
+                        }
+                        break;
+                    case GradeConfig.CORE_TYPE_SENT:
+                        Word word = new Word();
+                        word.score = wordJson.getInt("score");
+                        word.word = wordJson.optString("char");
+                        wordResultList.add(word);
+                        break;
+                }
             }
             result.wordResultList = wordResultList;
-            JSONObject rhythmJson = resultJson.getJSONObject("rhythm");
-            result.rhythmScore = rhythmJson.getInt("overall");
+//            JSONObject rhythmJson = resultJson.getJSONObject("rhythm");
+//            result.rhythmScore = rhythmJson.optInt("overall");
         } catch (JSONException e) {
             e.printStackTrace();
             result = null;

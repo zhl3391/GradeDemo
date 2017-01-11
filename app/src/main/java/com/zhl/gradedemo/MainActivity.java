@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnStartRecord = (Button) findViewById(R.id.btn_start_record);
         Button btnStopRecord = (Button) findViewById(R.id.btn_stop_record);
 
-        mTvContent.setText("how are you");
+        mTvContent.setText("how are you. how are you. how are you.");
 
         btnCreateXunFeiEngine.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 .setProvisionPath(provisionFile.getAbsolutePath())
                 .setLogPath(logPath)
                 .setUserId("DemoUser1")
+                .setCoreType(GradeConfig.CORE_TYPE_PRED)
                 .build();
         new Thread(new Runnable() {
             @Override

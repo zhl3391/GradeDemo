@@ -5,7 +5,7 @@ package com.feizhu.dubgrade;
  * 标点符号格式化
  */
 
-public interface PunctuationFormat {
+public interface WordFormat {
 
     String format(String text);
 }

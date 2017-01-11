@@ -1,5 +1,8 @@
 package com.feizhu.dubgrade;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by zhouhl on 2016/11/11.
  * 打分配置
@@ -27,7 +30,7 @@ public class GradeConfig {
 
     public final boolean isDebug;
 
-    public final PunctuationFormat punctuationFormat;
+    public final List<WordFormat> wordFormat;
 
     public GradeConfig() {
         this(new Builder());
@@ -48,7 +51,7 @@ public class GradeConfig {
         this.predWordDetail = builder.predWordDetail;
         this.predPhonemeDetails = builder.predPhonemeDetails;
         this.coreType = builder.coreType;
-        this.punctuationFormat = builder.punctuationFormat;
+        this.wordFormat = builder.mWordFormat;
     }
 
     public static final class Builder {
@@ -67,17 +70,17 @@ public class GradeConfig {
         int predWordDetail;
         int predPhonemeDetails;
         boolean isDebug;
-        PunctuationFormat punctuationFormat;
+        List<WordFormat> mWordFormat = new ArrayList<>();
 
         public Builder() {
             this.setCoreType(GradeConfig.CORE_TYPE_SENT)
                     .setSentRaw(0)
                     .setSentSymbol(0)
                     .setPredPrecision(1)
-                    .setPredPhonemeDetails(0)
-                    .setPredWordDetail(0)
+                    .setPredPhonemeDetails(1)
+                    .setPredWordDetail(1)
                     .setScoreType(100)
-                    .setPunctuationFormat(new DefaultPunctuationFormat());
+                    .addWordFormat(new DefaultPunctuationFormat());
         }
 
         public GradeConfig build() {
@@ -154,8 +157,10 @@ public class GradeConfig {
             return this;
         }
 
-        public Builder setPunctuationFormat(PunctuationFormat punctuationFormat) {
-            this.punctuationFormat = punctuationFormat;
+        public Builder addWordFormat(WordFormat wordFormat) {
+            if (wordFormat != null) {
+                mWordFormat.add(wordFormat);
+            }
             return this;
         }
     }

@@ -160,6 +160,8 @@ public class XunFeiGradeEngine implements GradeEngine {
         mIse.setParameter(SpeechConstant.KEY_SPEECH_TIMEOUT, speech_timeout);
         mIse.setParameter(SpeechConstant.RESULT_LEVEL, result_level);
         mIse.setParameter(SpeechConstant.AUDIO_SOURCE, "-1");
+        mIse.setParameter("plev", "0");
+        mIse.setParameter(SpeechConstant.AUTH_ID, mGradeConfig.userId);
 
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         // 注：AUDIO_FORMAT参数语记需要更新版本才能生效

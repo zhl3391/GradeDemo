@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         btnStartRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int ret = mGradeEngine.start(mTvContent.getText().toString(), 0);
+                int ret = mGradeEngine.start(mTvContent.getText().toString(), 0, "");
                 if (ret != GradeEngine.ERROR_CODE) {
                     MainActivityPermissionsDispatcher.showRecordAudioWithCheck(MainActivity.this);
                 } else {

@@ -13,7 +13,7 @@ public interface GradeEngine {
 
     boolean init(Context context, GradeConfig gradeConfig);
 
-    int start(String content, final int index);
+    int start(String content, final int index, String courseId);
 
     void writeAudio(byte[] data, int size);
 

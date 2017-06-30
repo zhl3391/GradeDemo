@@ -42,7 +42,7 @@ public class XunFeiGradeEngine implements GradeEngine {
     }
 
     @Override
-    public int start(String content, final int index) {
+    public int start(String content, final int index, String courseId) {
         if (mIse != null) {
             if (mGradeConfig.wordFormat != null) {
                 for (WordFormat wordFormat : mGradeConfig.wordFormat) {

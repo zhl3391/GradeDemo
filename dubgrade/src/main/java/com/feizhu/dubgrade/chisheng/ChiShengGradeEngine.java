@@ -44,7 +44,7 @@ public class ChiShengGradeEngine implements GradeEngine {
     }
 
     @Override
-    public int start(String content, final int index) {
+    public int start(String content, final int index, String courseId) {
         if (mEngineId != 0) {
             byte[] userdata = new byte[64];
             byte[] id = new byte[64];
@@ -53,7 +53,7 @@ public class ChiShengGradeEngine implements GradeEngine {
                     content = wordFormat.format(content);
                 }
             }
-            int ret = AIEngine.aiengine_start(mEngineId, getEngineStartParam(content, mGradeConfig.coreType),
+            int ret = AIEngine.aiengine_start(mEngineId, getEngineStartParam(content, mGradeConfig.coreType, courseId),
                     id, new AIEngine.aiengine_callback() {
                 @Override
                 public int run(byte[] id, int type, byte[] data, int size) {
@@ -139,7 +139,7 @@ public class ChiShengGradeEngine implements GradeEngine {
         return engineParams.toString();
     }
 
-    private String getEngineStartParam(String refText, int coreType) {
+    private String getEngineStartParam(String refText, int coreType, String courseId) {
         JSONObject engineParams = new JSONObject();
         try {
             engineParams.put("coreProvideType", "cloud");
@@ -185,6 +185,7 @@ public class ChiShengGradeEngine implements GradeEngine {
                 refTextObject.put("lm", refText);
                 requestObject.put("refText", refTextObject);
             }
+            requestObject.put("course_id", courseId);
             engineParams.put("request", requestObject);
 
         } catch (JSONException e) {

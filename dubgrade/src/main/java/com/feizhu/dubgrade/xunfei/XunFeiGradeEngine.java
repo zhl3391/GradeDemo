@@ -119,6 +119,11 @@ public class XunFeiGradeEngine implements GradeEngine {
     }
 
     @Override
+    public void writeAudio(String pcmPath) {
+
+    }
+
+    @Override
     public void stop() {
         if (mIse != null && mIse.isEvaluating()) {
             mIse.stopEvaluating();

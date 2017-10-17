@@ -14,6 +14,8 @@ public interface GradeResult {
      */
     List<WordResult> getWordResultList();
 
+    void setWordResultList(List<WordResult> wordResultList);
+
     /**
      * 总分
      */
@@ -53,6 +55,8 @@ public interface GradeResult {
      * 原始文字
      */
     String getText();
+
+    void setText(String text);
 
     String toString();
 

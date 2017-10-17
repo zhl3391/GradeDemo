@@ -1,5 +1,6 @@
 package com.feizhu.dubgrade.xunfei;
 
+import com.feizhu.dubgrade.GradeResult;
 import com.feizhu.dubgrade.StringGradeResult;
 
 import java.io.Serializable;
@@ -94,6 +95,11 @@ public class Result extends StringGradeResult implements Serializable {
     }
 
     @Override
+    public void setWordResultList(List<WordResult> wordResultList) {
+
+    }
+
+    @Override
     public int getTotalScore() {
         return (int) (total_score * 20);
     }
@@ -146,5 +152,10 @@ public class Result extends StringGradeResult implements Serializable {
     @Override
     public String getText() {
         return content;
+    }
+
+    @Override
+    public void setText(String text) {
+
     }
 }

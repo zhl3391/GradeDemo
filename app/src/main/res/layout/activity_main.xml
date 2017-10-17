@@ -29,11 +29,18 @@
             android:text="创建讯飞引擎"/>
 
         <Button
-            android:id="@+id/btn_destroy_engine"
+            android:id="@+id/btn_create_xiansheng_engine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="销毁引擎"/>
+            android:text="创建先声引擎"/>
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_destroy_engine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="销毁引擎"/>
 
     <TextView
         android:id="@+id/tv_content"

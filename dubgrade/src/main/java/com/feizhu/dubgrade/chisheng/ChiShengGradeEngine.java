@@ -7,6 +7,7 @@ import com.chivox.AIEngine;
 import com.feizhu.dubgrade.GradeConfig;
 import com.feizhu.dubgrade.GradeEngine;
 import com.feizhu.dubgrade.GradeResult;
+import com.feizhu.dubgrade.GradeResultImpl;
 import com.feizhu.dubgrade.StringGradeResult;
 import com.feizhu.dubgrade.WordFormat;
 
@@ -63,7 +64,7 @@ public class ChiShengGradeEngine implements GradeEngine {
                             Log.d(TAG, responseString);
                         }
                         if (mResultListener != null) {
-                            Result result = parseJson(responseString);
+                            GradeResult result = parseJson(responseString);
                             if (result != null) {
                                 mResultListener.onResult(result, index);
                             } else {
@@ -97,6 +98,11 @@ public class ChiShengGradeEngine implements GradeEngine {
     @Override
     public void writeAudio(byte[] data, int size) {
         AIEngine.aiengine_feed(mEngineId, data, size);
+    }
+
+    @Override
+    public void writeAudio(String pcmPath) {
+
     }
 
     @Override
@@ -195,51 +201,50 @@ public class ChiShengGradeEngine implements GradeEngine {
         return engineParams.toString();
     }
 
-    private Result parseJson(String jsonResult) {
-        Result result;
+    private GradeResult parseJson(String jsonResult) {
+        GradeResult result;
         try {
-            result = new Result();
+            result = new GradeResultImpl();
             JSONObject jsonObject = new JSONObject(jsonResult);
 
             JSONObject resultJson = jsonObject.getJSONObject("result");
-            result.totalScore = resultJson.optInt("overall");
-            result.accuracyScore = resultJson.optInt("accuracy");
-            result.integrityScore = resultJson.optInt("integrity");
+            result.setTotalScore(resultJson.optInt("overall"));
+            result.setAccuracyScore(resultJson.optInt("accuracy"));
+            result.setIntegrityScore(resultJson.optInt("integrity"));
             List<GradeResult.WordResult> wordResultList = new ArrayList<>();
             JSONArray details = resultJson.getJSONArray("details");
             switch (mGradeConfig.coreType) {
                 case CORE_TYPE_PRED:
-                    result.fluencyScore = resultJson.getInt("fluency");
-                    result.text = jsonObject.getJSONObject("refText").optString("lm");
+                    result.setFluencyScore(resultJson.getInt("fluency"));
+                    result.setText(jsonObject.getJSONObject("refText").optString("lm"));
                     break;
                 case CORE_TYPE_SENT:
                     JSONObject fluencyJson = resultJson.getJSONObject("fluency");
-                    result.fluencyScore = fluencyJson.optInt("overall");
-                    result.text = jsonObject.optString("refText");
+                    result.setFluencyScore(fluencyJson.optInt("overall"));
+                    result.setText(jsonObject.optString("refText"));
                     break;
             }
             for (int i=0; i<details.length(); i++) {
-
                 JSONObject wordJson = details.getJSONObject(i);
                 switch (mGradeConfig.coreType) {
                     case CORE_TYPE_PRED:
                         JSONArray wordsArray = wordJson.getJSONArray("words");
                         for (int j=0; j<wordsArray.length(); j++) {
-                            Word word = new Word();
+                            GradeResultImpl.Word word = new GradeResultImpl.Word();
                             word.word = wordsArray.getJSONObject(j).optString("text");
                             word.score = wordsArray.getJSONObject(j).optInt("score");
                             wordResultList.add(word);
                         }
                         break;
                     case GradeConfig.CORE_TYPE_SENT:
-                        Word word = new Word();
+                        GradeResultImpl.Word word = new GradeResultImpl.Word();
                         word.score = wordJson.getInt("score");
                         word.word = wordJson.optString("char");
                         wordResultList.add(word);
                         break;
                 }
             }
-            result.wordResultList = wordResultList;
+            result.setWordResultList(wordResultList);
 //            JSONObject rhythmJson = resultJson.getJSONObject("rhythm");
 //            result.rhythmScore = rhythmJson.optInt("overall");
         } catch (JSONException e) {
@@ -248,96 +253,5 @@ public class ChiShengGradeEngine implements GradeEngine {
         }
 
         return result;
-    }
-
-    private class Result extends StringGradeResult {
-
-        String text;
-        int totalScore;
-        int integrityScore;
-        int accuracyScore;
-        int fluencyScore;
-        int rhythmScore;
-        List<WordResult> wordResultList;
-
-        public List<WordResult> getWordResultList() {
-            return wordResultList;
-        }
-
-        @Override
-        public int getTotalScore() {
-            return totalScore;
-        }
-
-        @Override
-        public void setTotalScore(int score) {
-            totalScore = score;
-        }
-
-        @Override
-        public int getIntegrityScore() {
-            return integrityScore;
-        }
-
-        @Override
-        public void setIntegrityScore(int score) {
-            integrityScore = score;
-        }
-
-        @Override
-        public int getAccuracyScore() {
-            return accuracyScore;
-        }
-
-        @Override
-        public void setAccuracyScore(int score) {
-            accuracyScore = score;
-        }
-
-        @Override
-        public int getFluencyScore() {
-            return fluencyScore;
-        }
-
-        @Override
-        public void setFluencyScore(int score) {
-            fluencyScore = score;
-        }
-
-        @Override
-        public int getRhythmScore() {
-            return rhythmScore;
-        }
-
-        @Override
-        public void setRhythmScore(int score) {
-            rhythmScore = score;
-        }
-
-        @Override
-        public String getText() {
-            return text;
-        }
-    }
-
-    private class Word implements GradeResult.WordResult {
-
-        String word;
-        int score;
-
-        @Override
-        public String getWord() {
-            return word;
-        }
-
-        @Override
-        public int getScore() {
-            return score;
-        }
-
-        @Override
-        public String toString() {
-            return word + " = " + score;
-        }
     }
 }

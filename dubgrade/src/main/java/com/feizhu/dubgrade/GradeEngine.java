@@ -17,6 +17,8 @@ public interface GradeEngine {
 
     void writeAudio(byte[] data, int size);
 
+    void writeAudio(String pcmPath);
+
     void stop();
 
     void destroy();

@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Activity mActivity;
 
+    private String mRecordFilePath;
     private int mEngineType;
 
     @Override
@@ -47,11 +48,12 @@ public class MainActivity extends AppCompatActivity {
         mTvContent = (TextView) findViewById(R.id.tv_content);
         Button btnCreateChiShengEngine = (Button) findViewById(R.id.btn_create_chisheng_engine);
         Button btnCreateXunFeiEngine = (Button) findViewById(R.id.btn_create_xunfei_engine);
+        Button btnCreateXianShengEngine = (Button) findViewById(R.id.btn_create_xiansheng_engine);
         Button btnDestroyEngine = (Button) findViewById(R.id.btn_destroy_engine);
         Button btnStartRecord = (Button) findViewById(R.id.btn_start_record);
         Button btnStopRecord = (Button) findViewById(R.id.btn_stop_record);
 
-        mTvContent.setText("how are you. how are you. how are you.");
+        mTvContent.setText("how are you.");
 
         btnCreateXunFeiEngine.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mEngineType = GradeEngineFactory.TYPE_CHISHENG;
+                MainActivityPermissionsDispatcher.showReadPhoneStateWithCheck(MainActivity.this);
+            }
+        });
+
+        btnCreateXianShengEngine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEngineType = GradeEngineFactory.TYPE_XIANSHENG;
                 MainActivityPermissionsDispatcher.showReadPhoneStateWithCheck(MainActivity.this);
             }
         });
@@ -92,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mRecorder.stop();
+                mGradeEngine.writeAudio(mRecordFilePath);
                 mGradeEngine.stop();
             }
         });
@@ -136,13 +147,13 @@ public class MainActivity extends AppCompatActivity {
 
         mGradeConfig = new GradeConfig.Builder()
                 .setAppId(IgnoreConstants.appId)
-                .setAppKey(IgnoreConstants.appKey)
-                .setSecretKey(IgnoreConstants.secretKey)
+                .setAppKey(mEngineType == GradeEngineFactory.TYPE_CHISHENG ? IgnoreConstants.appKey : IgnoreConstants.xianShengAppKey)
+                .setSecretKey(mEngineType == GradeEngineFactory.TYPE_CHISHENG ? IgnoreConstants.secretKey : IgnoreConstants.xianShengSecretKey)
                 .setDebug(true)
                 .setProvisionPath(provisionFile.getAbsolutePath())
                 .setLogPath(logPath)
                 .setUserId("DemoUser1")
-                .setCoreType(GradeConfig.CORE_TYPE_PRED)
+                .setCoreType(GradeConfig.CORE_TYPE_SENT)
                 .build();
         new Thread(new Runnable() {
             @Override
@@ -168,9 +179,9 @@ public class MainActivity extends AppCompatActivity {
         if (mRecorder == null) {
             mRecorder = new Recorder();
         }
-        String recordFilePath = FileHelper.getFilesDir(mActivity)
+        mRecordFilePath = FileHelper.getFilesDir(mActivity)
                 .getPath() + "/record/" + System.currentTimeMillis() + ".wav";
-        mRecorder.start(recordFilePath, new Recorder.Callback() {
+        mRecorder.start(mRecordFilePath, new Recorder.Callback() {
             public void run(byte[] data, int size) {
                 mGradeEngine.writeAudio(data, size);
             }

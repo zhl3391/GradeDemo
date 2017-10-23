@@ -73,6 +73,7 @@ public class XianShengGradeEngine implements GradeEngine, BaseSingEngine.ResultL
             } else if (CORE_TYPE_PRED == mGradeConfig.coreType) {
                 request.put("coreType", "en.pred.exam");
             }
+            request.put("index", index);
             request.put("outputPhones", 1);
             request.put("refText", content);
             request.put("rank", mGradeConfig.scoreType);
@@ -118,7 +119,20 @@ public class XianShengGradeEngine implements GradeEngine, BaseSingEngine.ResultL
         if (mGradeConfig.isDebug) {
             Log.d(TAG, jsonObject.toString());
         }
-        mResultListener.onResult(parseJson(jsonObject), mIndex);
+        try {
+            if (jsonObject != null) {
+                int index = jsonObject.optJSONObject("params").optJSONObject("request").getInt("index");
+                if (jsonObject.getJSONObject("result") != null) {
+                    mResultListener.onResult(parseJson(jsonObject), index);
+                } else {
+                    mResultListener.onError(jsonObject.getInt("errId"), jsonObject.getString("error"), index);
+                }
+            } else {
+                mResultListener.onError(0, "no result", mIndex);
+            }
+        } catch (JSONException e) {
+            mResultListener.onError(0, e.getMessage(), mIndex);
+        }
     }
 
     @Override
